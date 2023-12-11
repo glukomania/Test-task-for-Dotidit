@@ -16,7 +16,7 @@ body {
   width: 100%;
   font-family: 'Inter, sans-serif';
   font-size: '24px';
-  color: white;
+  color: '#1d2838';
   background-size: 100% 100%;
   height: 100%;
   background-position: center;
@@ -26,28 +26,39 @@ body {
 
 #root {
   height: 100%;
+  background-color: white;
+}
+
+.header {
+  height: 5%;
   background-color: #5a0078;
 }
 
-
 .wrapper {
-  padding: 0 5%;
+  padding: 5% 5%;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-a {
-  color: white;
-  text-decoration: none;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border: 1px solid var(--cloud-500);
 }
 
-a:hover {
-  color: white;
-  text-decoration: none;
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+  // background-color: '#5a0078';
+  color: #475466
+
 }
 
-a:focus {
-  color: white;
-  text-decoration: none;
+th {
+  background-color: #5a0078; /* Цвет фона заголовка */
+  color: white
 }
