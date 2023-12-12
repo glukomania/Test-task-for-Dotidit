@@ -15,39 +15,77 @@ body {
   padding: 0;
   width: 100%;
   font-family: 'Inter, sans-serif';
-  font-size: '24px';
-  color: white;
-  background-size: 100% 100%;
-  height: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-#root {
   height: 100%;
   background-color: #5a0078;
 }
 
+#root {
+  height: 100%;
+}
+
+.header {
+  height: 5%;
+  background-color: #5a0078;
+}
 
 .wrapper {
-  padding: 0 5%;
+  margin: 5%;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-a {
-  color: white;
-  text-decoration: none;
+.table {
+  background-color: white;
+  border: 1px solid #d0d5dd;
+  border-radius: 38px;
+  padding: 5%;
 }
 
-a:hover {
-  color: white;
-  text-decoration: none;
+.table-title {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5%;
 }
 
-a:focus {
-  color: white;
-  text-decoration: none;
+.table-title__text {
+  width: 80%;
+  justify-content: flex-start;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: Poppins, sans-serif;
+}
+
+.table-title__menuIcon {
+  width: 10%;
+  justify-content: flex-end;
+}
+
+.burger-btn{
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+table {
+  width: 90%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border: 1px solid var(--cloud-500);
+  background-color: #f9fafb;
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+  // background-color: '#5a0078';
+  color: #475466
+
+}
+
+th {
+  background-color: #5a0078; /* Цвет фона заголовка */
+  color: white
 }
