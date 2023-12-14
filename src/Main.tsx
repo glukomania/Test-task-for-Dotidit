@@ -76,29 +76,12 @@ const Main = () => {
   }, [columns])
 
 
-
-// const UPDATE_DATA_SOURCE_MUTATION = useMemo(() => gql`mutation UpdateDataSource {
-//   updateDataSource(id: $id, name: $name, archived: $archived) {
-//       errors
-//       updateNotificationText
-//   }
-// }`, [])
-
-// const UPDATE_DATA_SOURCE_MUTATION = useMemo(() => gql`mutation UpdateDataSource {
-//   updateDataSource(id: "1493", archived: false) {
-//       errors
-//       updateNotificationText
-//   }
-// }`, [])
-
 const UPDATE_DATA_SOURCE_MUTATION = gql`
 mutation UpdateDataSource($id: BigInt!, $name: String!, $archived: Boolean!) {
   updateDataSource(id: $id, name: $name, archived: $archived) {
     errors
     updateNotificationText
-}
-}
-`
+}}`
 
 const [updateDataSource] = useMutation(UPDATE_DATA_SOURCE_MUTATION);
 
@@ -106,15 +89,15 @@ const [updateDataSource] = useMutation(UPDATE_DATA_SOURCE_MUTATION);
 const handleUpdateDataSource = async (id: number, name: string, archived: boolean) => {
 
   try {
-    const response = await updateDataSource({
+    await updateDataSource({
       variables: {
         id,
         name,
         archived,
       },
     })
-    console.log('Updated data source:', response);
-    setData(response.data.updateDataSource)
+    getData()
+    
   } catch (error) {
     console.error('Error updating data source:', error.message);
   }
@@ -124,8 +107,7 @@ const handleUpdateDataSource = async (id: number, name: string, archived: boolea
     setIsMenuOpen(!isMenuOpen)
   }, [isMenuOpen])
 
-  useEffect(() => {
-
+  const getData = () => {
     if (columns.length > 0) {
       try {
         client
@@ -146,6 +128,10 @@ const handleUpdateDataSource = async (id: number, name: string, archived: boolea
     } else {
       setData(null);
     }
+  }
+
+  useEffect(() => {
+    getData()
   }, [columns])
 
   useEffect(() => {
@@ -159,10 +145,6 @@ const handleUpdateDataSource = async (id: number, name: string, archived: boolea
         const { id, name, archived } = item;
         handleUpdateDataSource(Number(id), name, archived);
       })
-      // const { id, name, archived } = dataToSend;
-      // console.log('dataToSend', dataToSend)
-      // console.log('id, name, archived', id, name, archived)
-      // handleUpdateDataSource(id, name, archived);
     }
   }, [dataToSend])
 
