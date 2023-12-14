@@ -5,7 +5,6 @@
     "jsx": "react",
     "esModuleInterop": true,
     "module": "commonjs",
-    // "strict": true,
     "types": ["@testing-library/jest-dom", "node"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

@@ -18,24 +18,12 @@ const Menu = (props: MenuProps) => {
 
   const onColumnToggle = (name: string) => {
 
-    if (props.headers.filter(item => item.isVisible).length > 1) {        //logic to prevent the whole table disappearing
-      const selectedHeader = props.headers.find((header: Header) => header.Header === name)
-      const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
-  
-      const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
-  
-      props.setHeaders(newHeaders)
-      
-    } else {
-      const selectedHeader = props.headers.find((header: Header) => header.Header === name)
-      if (!selectedHeader.isVisible) {
-        const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
-  
-        const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
-    
-        props.setHeaders(newHeaders)
-      }
-    }
+    const selectedHeader = props.headers.find((header: Header) => header.Header === name)
+    const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
+
+    const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
+
+    props.setHeaders(newHeaders)
   }
 
   return (
@@ -45,12 +33,13 @@ const Menu = (props: MenuProps) => {
         <div className='menu__header'>{props.header}</div>
           <ul>
             {props.headers.map((item: Header) => {
-              return (<div key={item.Header} className="menuitem">
+              return (item.Header !== 'Id' && <div key={item.Header} className="menuitem">
                         <label>
                           <input
                             type="checkbox"
                             checked={item.isVisible}
                             onChange={() => onColumnToggle(item.Header)}
+                            disabled={item.Header === 'Name'}
                             className='checkbox'
                           />
                           {item.Header}

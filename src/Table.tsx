@@ -2,21 +2,33 @@ import * as React from 'react'
 import {useState, useCallback, useEffect} from 'react'
 import {useTable} from 'react-table'
 import getDate from './utils/getDate'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLock } from '@fortawesome/free-solid-svg-icons';
+
+interface DataType {
+  id: string
+  name: string
+  archived: boolean
+  itemsCount: string
+  icon: string
+  lastImport: string
+  createdAt: string
+}
 
 const RenderCell = ({ columnId, cellValue, setEditedRows, row, editedRows }) => {
   const [inputValue, setInputValue] = useState(cellValue);
 
-  const onChangeValue = (event, columnId) => {
+  const onChangeValue = (event, columnId: string) => {
     if (columnId === 'name') {
 
-      if(!editedRows.find(item => item.id === row.values.id)){
+      if(!editedRows.find((item: DataType) => item.id === row.values.id)){
 
         const newEditedRows = [...editedRows, {...row.values, [columnId]: event.target.value}]
         setEditedRows(newEditedRows)
 
       } else {
 
-        const updatedRows = editedRows.map(item => {
+        const updatedRows = editedRows.map((item: DataType) => {
           return item.id === row.values.id ? { ...item, [columnId]: event.target.value } : item
         })
 
@@ -28,12 +40,12 @@ const RenderCell = ({ columnId, cellValue, setEditedRows, row, editedRows }) => 
 
     } else if (columnId ==='archived'){
 
-      if(!editedRows.find(item => item.id === row.values.id)){
+      if(!editedRows.find((item: DataType) => item.id === row.values.id)){
         const newEditedRows = [...editedRows, {...row.values, [columnId]: event.target.checked}]
         setEditedRows(newEditedRows)
       } else {
         
-        const updatedRows = editedRows.map(item => {
+        const updatedRows = editedRows.map((item: DataType) => {
           return item.id === row.values.id ? { ...item, [columnId]: event.target.checked } : item
         })
 
@@ -101,7 +113,11 @@ const Table = ({ columns, data, setDataToSend }) => {
     return headers.map((header) => (
       <tr {...header.getHeaderGroupProps()}>
         {header.headers.map((column) => {
-          return (column.id !== 'id' && <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+          return (
+            column.id !== 'id' && <th {...column.getHeaderProps()}>
+              {column.render('Header')}
+              {column.id === 'name' && <FontAwesomeIcon icon={faLock} style={{ height: "12px", color: '#784b84', marginLeft: '7px' }}/>}
+            </th>
         )})}
       </tr>
     ))
@@ -111,7 +127,9 @@ const Table = ({ columns, data, setDataToSend }) => {
     return (
       row.cells.map((cell) => (
         cell.column.id !== 'id' && <td {...cell.getCellProps()}>
-          {cell.value !== null && <RenderCell columnId={cell.column.id} cellValue={cell.value} setEditedRows={setEditedRows} row={row} editedRows={editedRows}/>}
+          {
+            cell.value !== null && <RenderCell columnId={cell.column.id} cellValue={cell.value} setEditedRows={setEditedRows} row={row} editedRows={editedRows}/>
+          }
         </td>
       ))
     )
@@ -127,10 +145,6 @@ const Table = ({ columns, data, setDataToSend }) => {
       );
     })
   }
-
-  useEffect(()=> {
-    console.log('editedRows', editedRows)
-  }, [editedRows])
 
   return (
     headerGroups.length > 0 && 

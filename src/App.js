@@ -5,7 +5,7 @@ import Main from './Main'
 
 const AppWithApollo = () => (
   <ApolloProvider client={client}>
-    <Main />
+    <Main client={client} />
   </ApolloProvider>
 )
 

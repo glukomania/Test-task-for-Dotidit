@@ -1,29 +1,34 @@
 import * as React from 'react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import client from '../apollo'
+// import client from '../apollo'
 import Table from './Table'
 import Menu from './Menu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 interface DataType {
-  id: string;
-  name: string;
-  archived: boolean;
-  itemsCount: string;
-  icon: string;
-  lastImport: string;
-  createdAt: string;
+  id: string
+  name: string
+  archived: boolean
+  itemsCount: string
+  icon: string
+  lastImport: string
+  createdAt: string
 }
 
-const Main = () => {
-  const [data, setData] = useState(null)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
+interface Header {
+  Header: string
+  accessor: string
+  isVisible: boolean
+}
+  
+const Main = ({client}) => {
+  const [data, setData] = useState<DataType[]>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
   const [dataToSend, setDataToSend] = useState<DataType[]>()
-
-  const [headers, setHeaders] = useState([
+  const [columns, setColumns] = useState<string[]>(['id', 'name', 'archived', 'createdAt', 'icon', 'itemsCount', 'lastImport'])
+  const [headers, setHeaders] = useState<Header[]>([
     {
       Header: 'Id',
       accessor: 'id',
@@ -61,7 +66,6 @@ const Main = () => {
     },
   ])
 
-  const [columns, setColumns] = useState(['id', 'name', 'archived', 'createdAt', 'icon', 'itemsCount', 'lastImport'])
 
   const DATA_SOURCES_QUERY = useMemo(() => {
     return gql`
@@ -76,62 +80,81 @@ const Main = () => {
   }, [columns])
 
 
-const UPDATE_DATA_SOURCE_MUTATION = gql`
-mutation UpdateDataSource($id: BigInt!, $name: String!, $archived: Boolean!) {
-  updateDataSource(id: $id, name: $name, archived: $archived) {
-    errors
-    updateNotificationText
-}}`
+  const UPDATE_DATA_SOURCE_MUTATION = gql`
+  mutation UpdateDataSource($id: BigInt!, $name: String!) {
+    updateDataSource(id: $id, name: $name) {
+      errors
+      updateNotificationText
+  }}`
+
+  const UPDATE_DATA_SOURCE_MUTATION_ARCHIVED = gql`
+  mutation UpdateDataSource($id: BigInt!, $name: String!, $archived: Boolean!) {
+    updateDataSource(id: $id, name: $name, archived: $archived) {
+      errors
+      updateNotificationText
+  }}`
+
 
 const [updateDataSource] = useMutation(UPDATE_DATA_SOURCE_MUTATION);
+const [updateDataSourceArchived] = useMutation(UPDATE_DATA_SOURCE_MUTATION_ARCHIVED);
 
-
-const handleUpdateDataSource = async (id: number, name: string, archived: boolean) => {
+const handleUpdateDataSource = useCallback(async (id: number, name: string, archived: boolean) => {
 
   try {
-    await updateDataSource({
-      variables: {
-        id,
-        name,
-        archived,
-      },
-    })
-    getData()
+    if(archived !== undefined) {
+      await updateDataSourceArchived({
+        variables: {
+          id,
+          name,
+          archived,
+        },
+      })
+    } else {
+      await updateDataSource({
+        variables: {
+          id,
+          name,
+        },
+      })
+    }
+
+    handleGetData()
     
   } catch (error) {
     console.error('Error updating data source:', error.message);
   }
-}
+}, [])
+
+const handleGetData = useCallback(() => {
+  if (columns.length > 0) {
+    try {
+      client
+        .query({
+          query: DATA_SOURCES_QUERY,
+        })
+        .then((response) => {
+          if (response?.data?.collection?.dataSources) {
+            setData(response.data.collection.dataSources);
+          }
+        })
+        .catch((error) => {
+          console.error('GraphQL error:', error);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    setData(null);
+  }
+}, [])
 
   const handleIconPress = useCallback(() => {
     setIsMenuOpen(!isMenuOpen)
   }, [isMenuOpen])
 
-  const getData = () => {
-    if (columns.length > 0) {
-      try {
-        client
-          .query({
-            query: DATA_SOURCES_QUERY,
-          })
-          .then((response) => {
-            if (response?.data?.collection?.dataSources) {
-              setData(response.data.collection.dataSources);
-            }
-          })
-          .catch((error) => {
-            console.error('GraphQL error:', error);
-          });
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      setData(null);
-    }
-  }
 
   useEffect(() => {
-    getData()
+    handleGetData()
   }, [columns])
 
   useEffect(() => {
@@ -158,9 +181,9 @@ const handleUpdateDataSource = async (id: number, name: string, archived: boolea
           </div>
         </div>
         {(data && data.length > 0 && headers.filter(item=>item.isVisible).length > 0) ? <Table columns={headers.filter(item=>item.isVisible)} data={data} setDataToSend={setDataToSend} /> : null}
-        
         {(isMenuOpen && data && data.length > 0) ? <Menu header={'Choose columns:'} setHeaders={setHeaders} headers={headers} setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen}/> : null}
-        {!data && <div>To data</div>}
+        
+        {!data && <div>No data</div>}
       </div>
     </div>
   )
