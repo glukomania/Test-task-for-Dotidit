@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Menu component renders correctly 1`] = `
+<div>
+  <div
+    class="menu"
+  >
+    <div
+      class="blur"
+    />
+    <div
+      class="menu__content"
+    >
+      <div
+        class="menu__header"
+      >
+        Menu Header
+      </div>
+      <ul>
+        <div
+          class="menuitem"
+        >
+          <label>
+            <input
+              checked=""
+              class="checkbox"
+              disabled=""
+              type="checkbox"
+            />
+            Name
+          </label>
+        </div>
+        <div
+          class="menuitem"
+        >
+          <label>
+            <input
+              checked=""
+              class="checkbox"
+              type="checkbox"
+            />
+            Age
+          </label>
+        </div>
+        <div
+          class="menuitem"
+        >
+          <label>
+            <input
+              class="checkbox"
+              type="checkbox"
+            />
+            City
+          </label>
+        </div>
+      </ul>
+    </div>
+  </div>
+</div>
+`;

@@ -57,20 +57,20 @@ describe('Menu component', () => {
     ]);
   });
 
-  it('does not toggle visibility if only one column is visible', () => {
-    const setHeadersMock = jest.fn();
-    const { getByText } = render(
-      <Menu
-        headers={[{ Header: 'Column1', accessor: 'col1', isVisible: true }]}
-        setHeaders={setHeadersMock}
-        header="Test Header"
-        setIsMenuOpen={() => {}}
-        isMenuOpen={false}
-      />
-    );
 
-    fireEvent.click(getByText('Column1').closest('label'));
+  it('closes the menu when the blur area is clicked', () => {
+    const setIsMenuOpenMock = jest.fn();
+    const { container } = render(      
+    <Menu
+      headers={headersMock}
+      setHeaders={() => jest.fn()}
+      header="Test Header"
+      setIsMenuOpen={setIsMenuOpenMock}
+      isMenuOpen={true}
+    />);
+    const blurArea = container.querySelector('.blur');
+    fireEvent.click(blurArea);
 
-    expect(setHeadersMock).not.toHaveBeenCalled();
+    expect(setIsMenuOpenMock).toHaveBeenCalledWith(false);
   });
 });

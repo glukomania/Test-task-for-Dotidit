@@ -1,4 +1,3 @@
-// import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 const { ApolloClient, InMemoryCache, createHttpLink } = require('@apollo/client')
 import { setContext } from '@apollo/client/link/context'
 
