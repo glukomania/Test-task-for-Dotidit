@@ -1,36 +1,62 @@
-import * as React from 'react';
+import * as React from 'react'
 
-const Menu = (props) => {
+type Header = {
+  Header: string
+  accessor: string
+  isVisible: boolean
+}
 
-  const onColumnToggle = (name) => {
-    console.log('name', name)
-    const selectedHeader = props.headers.find(header => header.Header === name)
-    console.log('selectedHeader', selectedHeader)
-    const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
-    console.log('new Headers', newSelectedHeader)
+type MenuProps = {
+  headers: Header[]
+  setHeaders: (newHeaders: Header[]) => void;
+  header: string
+  setIsMenuOpen: (arg0: boolean) => void;
+  isMenuOpen: boolean
+}
 
-    const newHeaders = props.headers.map(header => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
-    console.log('newHeaders', newHeaders)
-    props.setHeaders(newHeaders)
+const Menu = (props: MenuProps) => {
+
+  const onColumnToggle = (name: string) => {
+
+    if (props.headers.filter(item => item.isVisible).length > 1) {        //logic to prevent the whole table disappearing
+      const selectedHeader = props.headers.find((header: Header) => header.Header === name)
+      const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
+  
+      const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
+  
+      props.setHeaders(newHeaders)
+      
+    } else {
+      const selectedHeader = props.headers.find((header: Header) => header.Header === name)
+      if (!selectedHeader.isVisible) {
+        const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
+  
+        const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
+    
+        props.setHeaders(newHeaders)
+      }
+    }
   }
+
   return (
     <div className="menu">
       <div className="blur" onClick={() => props.setIsMenuOpen(!props.isMenuOpen)}/>
       <div className="menu__content">
         <div className='menu__header'>{props.header}</div>
           <ul>
-            {props.items.map(item => {
-              return (<div key={item.Header}>
-          <label>
-            <input
-              type="checkbox"
-              checked={item.isVisible}
-              onChange={() => onColumnToggle(item.Header)}
-            />
-            {item.Header}
-          </label>
-        </div>)}
-        )}
+            {props.headers.map((item: Header) => {
+              return (<div key={item.Header} className="menuitem">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={item.isVisible}
+                            onChange={() => onColumnToggle(item.Header)}
+                            className='checkbox'
+                          />
+                          {item.Header}
+                        </label>
+                      </div>)}
+            )}
           </ul>
       </div>
     </div>
