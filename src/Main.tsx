@@ -63,10 +63,10 @@ const Main = () => {
           }
         }
       }
-    `;
-  }, [columns]);
+    `
+  }, [columns])
 
-  const UPDATE_DATA_SOURCE_MUTATION = gql`
+  const UPDATE_DATA_SOURCE_MUTATION = useMemo(() => gql`
   mutation UpdateDataSource($id: String!, $name: String!, $archived: Boolean!) {
     updateDataSource(id: $id, name: $name, archived: $archived) {
       id
@@ -74,11 +74,11 @@ const Main = () => {
       archived
     }
   }
-`;
+`, [])
 
 const [updateDataSource] = useMutation(UPDATE_DATA_SOURCE_MUTATION);
 
-const handleUpdateDataSource = async (id, name, archived) => {
+const handleUpdateDataSource = async (id: string, name: string, archived: boolean) => {
   try {
     const response = await updateDataSource({
       variables: {
@@ -86,22 +86,21 @@ const handleUpdateDataSource = async (id, name, archived) => {
         name,
         archived,
       },
-    });
+    })
     console.log('Updated data source:', response.data.updateDataSource);
+    setData(response.data.updateDataSource)
   } catch (error) {
     console.error('Error updating data source:', error.message);
   }
-};
+}
 
   const handleIconPress = useCallback(() => {
     setIsMenuOpen(!isMenuOpen)
   }, [isMenuOpen])
 
   useEffect(() => {
-    console.log('columns', columns)
 
     if (columns.length > 0) {
-      console.log('get data')
       try {
         client
           .query({
@@ -109,7 +108,6 @@ const handleUpdateDataSource = async (id, name, archived) => {
           })
           .then((response) => {
             if (response?.data?.collection?.dataSources) {
-              console.log('response', response.data.collection.dataSources);
               setData(response.data.collection.dataSources);
             }
           })
@@ -130,7 +128,6 @@ const handleUpdateDataSource = async (id, name, archived) => {
   },[headers])
 
   useEffect(() => {
-    console.log('dataToSend', dataToSend)
     if (dataToSend) {
       const { id, name, archived } = dataToSend;
       handleUpdateDataSource(id, name, archived);
@@ -142,15 +139,13 @@ const handleUpdateDataSource = async (id, name, archived) => {
       <div className="table">
         <div className="table-title">
           <div className="table-title__text">Data Sources</div>
-          <div className="table-title__menuIcon">
-            <div className="burger-btn" onClick={handleIconPress}>
-              <FontAwesomeIcon icon={faBars} />
-            </div>
+          <div className="table-title__menuIcon" onClick={handleIconPress}>
+              <FontAwesomeIcon icon={faBars} style={{ height: "20px" }}/>
           </div>
         </div>
-        {data && data.length > 0 && headers.filter(item=>item.isVisible).length > 0 && <Table columns={headers.filter(item=>item.isVisible)} data={data} setDataToSend={setDataToSend} />}
+        {(data && data.length > 0 && headers.filter(item=>item.isVisible).length > 0) ? <Table columns={headers.filter(item=>item.isVisible)} data={data} setDataToSend={setDataToSend} /> : null}
         
-        {isMenuOpen && data && data.length > 0 && <Menu header={'Choose columns:'} setHeaders={setHeaders} headers={headers} setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen}/> }
+        {(isMenuOpen && data && data.length > 0) ? <Menu header={'Choose columns:'} setHeaders={setHeaders} headers={headers} setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen}/> : null}
         {!data && <div>To data</div>}
       </div>
     </div>

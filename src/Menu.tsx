@@ -1,5 +1,4 @@
 import * as React from 'react'
-import {useEffect} from 'react'
 
 type Header = {
   Header: string
@@ -18,18 +17,26 @@ type MenuProps = {
 const Menu = (props: MenuProps) => {
 
   const onColumnToggle = (name: string) => {
-    const selectedHeader = props.headers.find((header: Header) => header.Header === name)
-    const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
 
-    const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
-
-    console.log('newHeaders', newHeaders)
-    props.setHeaders(newHeaders)
+    if (props.headers.filter(item => item.isVisible).length > 1) {        //logic to prevent the whole table disappearing
+      const selectedHeader = props.headers.find((header: Header) => header.Header === name)
+      const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
+  
+      const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
+  
+      props.setHeaders(newHeaders)
+      
+    } else {
+      const selectedHeader = props.headers.find((header: Header) => header.Header === name)
+      if (!selectedHeader.isVisible) {
+        const newSelectedHeader = {...selectedHeader, isVisible: !selectedHeader.isVisible}
+  
+        const newHeaders = props.headers.map((header: Header) => (header.Header === newSelectedHeader.Header ? newSelectedHeader : header));
+    
+        props.setHeaders(newHeaders)
+      }
+    }
   }
-
-  useEffect(() => {
-    console.log('Menu has been rendered')
-  }, [])
 
   return (
     <div className="menu">
@@ -38,17 +45,18 @@ const Menu = (props: MenuProps) => {
         <div className='menu__header'>{props.header}</div>
           <ul>
             {props.headers.map((item: Header) => {
-              return (<div key={item.Header}>
-          <label>
-            <input
-              type="checkbox"
-              checked={item.isVisible}
-              onChange={() => onColumnToggle(item.Header)}
-            />
-            {item.Header}
-          </label>
-        </div>)}
-        )}
+              return (<div key={item.Header} className="menuitem">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={item.isVisible}
+                            onChange={() => onColumnToggle(item.Header)}
+                            className='checkbox'
+                          />
+                          {item.Header}
+                        </label>
+                      </div>)}
+            )}
           </ul>
       </div>
     </div>

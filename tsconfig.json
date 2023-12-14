@@ -4,8 +4,9 @@
     "lib": ["dom", "es2015"],
     "jsx": "react",
     "esModuleInterop": true,
-    "module": "commonjs"
+    "module": "commonjs",
     // "strict": true,
+    "types": ["@testing-library/jest-dom", "node"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]

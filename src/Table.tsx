@@ -144,7 +144,7 @@ const Table = ({ columns, data, setDataToSend }) => {
         </tbody>
         </table>
 
-        <div onClick={handleSave}>Save</div>
+        <div className="button" onClick={handleSave}>Save</div>
       </div>
     )
   );
