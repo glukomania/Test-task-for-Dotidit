@@ -7,12 +7,21 @@ import Menu from './Menu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
+interface DataType {
+  id: string;
+  name: string;
+  archived: boolean;
+  itemsCount: string;
+  icon: string;
+  lastImport: string;
+  createdAt: string;
+}
 
 const Main = () => {
   const [data, setData] = useState(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const [dataToSend, setDataToSend] = useState()
+  const [dataToSend, setDataToSend] = useState<DataType[]>()
 
   const [headers, setHeaders] = useState([
     {
@@ -66,19 +75,36 @@ const Main = () => {
     `
   }, [columns])
 
-  const UPDATE_DATA_SOURCE_MUTATION = useMemo(() => gql`
-  mutation UpdateDataSource($id: String!, $name: String!, $archived: Boolean!) {
-    updateDataSource(id: $id, name: $name, archived: $archived) {
-      id
-      name
-      archived
-    }
-  }
-`, [])
+
+
+// const UPDATE_DATA_SOURCE_MUTATION = useMemo(() => gql`mutation UpdateDataSource {
+//   updateDataSource(id: $id, name: $name, archived: $archived) {
+//       errors
+//       updateNotificationText
+//   }
+// }`, [])
+
+// const UPDATE_DATA_SOURCE_MUTATION = useMemo(() => gql`mutation UpdateDataSource {
+//   updateDataSource(id: "1493", archived: false) {
+//       errors
+//       updateNotificationText
+//   }
+// }`, [])
+
+const UPDATE_DATA_SOURCE_MUTATION = gql`
+mutation UpdateDataSource($id: BigInt!, $name: String!, $archived: Boolean!) {
+  updateDataSource(id: $id, name: $name, archived: $archived) {
+    errors
+    updateNotificationText
+}
+}
+`
 
 const [updateDataSource] = useMutation(UPDATE_DATA_SOURCE_MUTATION);
 
-const handleUpdateDataSource = async (id: string, name: string, archived: boolean) => {
+
+const handleUpdateDataSource = async (id: number, name: string, archived: boolean) => {
+
   try {
     const response = await updateDataSource({
       variables: {
@@ -87,7 +113,7 @@ const handleUpdateDataSource = async (id: string, name: string, archived: boolea
         archived,
       },
     })
-    console.log('Updated data source:', response.data.updateDataSource);
+    console.log('Updated data source:', response);
     setData(response.data.updateDataSource)
   } catch (error) {
     console.error('Error updating data source:', error.message);
@@ -129,8 +155,14 @@ const handleUpdateDataSource = async (id: string, name: string, archived: boolea
 
   useEffect(() => {
     if (dataToSend) {
-      const { id, name, archived } = dataToSend;
-      handleUpdateDataSource(id, name, archived);
+      dataToSend.forEach(item => {
+        const { id, name, archived } = item;
+        handleUpdateDataSource(Number(id), name, archived);
+      })
+      // const { id, name, archived } = dataToSend;
+      // console.log('dataToSend', dataToSend)
+      // console.log('id, name, archived', id, name, archived)
+      // handleUpdateDataSource(id, name, archived);
     }
   }, [dataToSend])
 
